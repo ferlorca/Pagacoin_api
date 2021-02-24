@@ -1,5 +1,5 @@
 import { Application } from "express";
-import {all,add} from "../controller/user/user";
+import {all,add} from "../controller/transaction/transaction";
 import { isAuthenticated  } from "../controller/auth/authenticated";
 
 

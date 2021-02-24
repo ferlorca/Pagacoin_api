@@ -1,4 +1,3 @@
-import { Wallet } from "./Wallet";
 
 export class User{
     
@@ -6,9 +5,9 @@ export class User{
     id:string;
     name:string;
     phone:string;
-    wallets: Array<Wallet>;
+    wallets: Array<string>;
 
-    constructor(id:string ,email:string,name:string,phone:string,wallets:Array<Wallet>) {
+    constructor(id:string ,email:string,name:string,phone:string,wallets:Array<string>) {
         this.email=email;   
         this.id=id;   
         this.name=name ?? "My name" ;       
@@ -46,7 +45,7 @@ export class User{
             email: this.email,
             name : this.name,
             phone : this.phone,
-            wallets :this.wallets.map(item=>item.toJson()) 
+            wallets :this.wallets
         }
     }
 
