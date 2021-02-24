@@ -2,11 +2,11 @@
 export class Wallet{
     alias:string;
     balance:number;
-    ownerid:string;
+    ownerId:string;
     id:string;
 
-    constructor(id:string,ownerid:string,alias:string, balance:number) {
-        this.ownerid=ownerid;
+    constructor(id:string,ownerId:string,alias:string, balance:number) {
+        this.ownerId=ownerId;
         this.alias=alias !== null && alias.length > 0 ?  alias : "My Wallet";       
         this.balance=balance;
         this.id =id;
@@ -14,7 +14,7 @@ export class Wallet{
 
     public toJson(): any {
         return {
-            ownerid: this.ownerid,
+            ownerId: this.ownerId,
             alias :this.alias,
             balance:this.balance  
         }
@@ -25,15 +25,15 @@ export class Wallet{
         const alias = wallet.alias;
         const id =  data.id;
         const balance = wallet.balance;
-        const ownerid = wallet.ownerid;
-        return new this(id,ownerid,alias,balance);
+        const ownerId = wallet.ownerId;
+        return new this(id,ownerId,alias,balance);
     }
 
     static fromRequest(data:any): Wallet {
-        const ownerid = data.ownerid;
+        const ownerId = data.ownerId;
         const id = data.id ?? "";
-        const alias = data.name ?? "My name";
-        const balance =  data.email;         
-        return new this(id,ownerid,alias,balance);
+        const alias = data.alias ?? "My Wallet";
+        const balance =  parseFloat(data.balance);         
+        return new this(id,ownerId,alias,balance);
     }
 }

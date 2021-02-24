@@ -1,5 +1,5 @@
 import { Application } from "express";
-import { all,update,add} from "../controller/wallet/wallet";
+import { all,update,add,remove} from "../controller/wallet/wallet";
 import { isAuthenticated  } from "../controller/auth/authenticated";
 
 
@@ -17,6 +17,11 @@ export default function routesConfig(app: Application) {
     app.post('/wallet/add',
         [isAuthenticated,
         add]
+    ); 
+
+    app.delete('/wallet/delete',
+        [isAuthenticated,
+        remove]
     );    
     
  }

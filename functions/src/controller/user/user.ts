@@ -42,7 +42,9 @@ export async function add(req: Request, res: Response) {
 			return res.status(400).send({ message: 'Missing fields' })
 		}
 		let user:User =User.fromRequest({...req.body});		
-		user = await addUser(user);
+		if(!await alreadyExist(user))	
+			user = await addUser(user);
+		else return res.status(400).send({ message: 'Action not valid' });	
       
 		return res.status(200).send({user})       
 	} catch (err) {
@@ -54,7 +56,7 @@ export async function updateUser(user:User) {
 	try {
 		await admin.firestore()
         .collection("user")
-        .doc(user.id).update({name:user.name,email:user.email,phone:user.phone,wallets:user.wallets});
+        .doc(user.id).update({name:user.name,email:user.email,phone:user.phone});
       
 	} catch (err) {
 		console.error(err);
@@ -62,15 +64,25 @@ export async function updateUser(user:User) {
 	}
 }
 
+export async function alreadyExist(user:User) {
+	try {        
+        var userSnapshot = await admin.firestore().collection("user").where("email","==",user.email).get();
+		return userSnapshot.size > 0
+	} catch (err) {
+		console.error(err);
+        throw err;
+    }
+}
+
 export async function addUser(user:User) {
 	try {        
         var userRef = admin.firestore().collection("user");
 		if(user.id !== "" ){
 			await userRef.doc(user.id).create(user.toJson());
-			return new User(user.id,user.email,user.name,user.phone,user.wallets)
+			return new User(user.id,user.email,user.name,user.phone)
 		}else{
 			const userSnapshot= await userRef.add(user.toJson());
-			return new User(userSnapshot.id,user.email,user.name,user.phone,user.wallets)
+			return new User(userSnapshot.id,user.email,user.name,user.phone)
 		}
 	} catch (err) {
 		console.error(err);

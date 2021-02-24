@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import * as admin from 'firebase-admin';
 import { handleError } from "../error/handle-error";
 import { MyTransactions, Transaction } from '../../models/Transaction';
+import { updateWalletsByTransaction } from "../wallet/wallet";
 
 
 export async function all(req: Request, res: Response) {
@@ -10,7 +11,6 @@ export async function all(req: Request, res: Response) {
         if (!walledId ) {
             return res.status(400).send({ message: 'Missing fields' })
         }
-
         let transactions = new MyTransactions();
         transactions.received = await getIncomingTransaction(walledId);
         transactions.delivered = await getOutcomingTransaction(walledId);
@@ -28,12 +28,12 @@ export async function add(req: Request, res: Response) {
 
 		if (!origin || !destiny || !amount) {
 			return res.status(400).send({ message: 'Missing fields' })
+        }        
+        if(!await updateWalletsByTransaction(origin,destiny,parseFloat(amount))){
+            return res.status(400).send({ message: 'The operation could not be performed' })
         }
-        /*Validar el balance*/
-
         await admin.firestore()
-            .collection("transaction").add({origin,destiny,amount});
-
+            .collection("transaction").add({origin,destiny,amount,date:new Date()});
 		return res.status(200).send(true)       
 	} catch (err) {
 		return handleError(res, err)

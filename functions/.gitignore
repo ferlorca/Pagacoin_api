@@ -10,3 +10,4 @@ node_modules/
 
 # key firebase
 pagacoin-key.json
+src/config.ts
