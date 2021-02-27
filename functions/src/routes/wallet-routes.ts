@@ -4,7 +4,7 @@ import { isAuthenticated  } from "../controller/auth/authenticated";
 
 
 export default function routesConfig(app: Application) {   
-    app.get('/wallets',
+    app.get('/wallet/all',
        [isAuthenticated,
         all]
     );

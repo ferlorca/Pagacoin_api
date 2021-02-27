@@ -5,11 +5,11 @@ import { Wallet } from "../../models/Wallet";
 
 export async function all(req: Request, res: Response) {
     try {
-        const { ownerId } = req.body;
+        const { ownerId } = req.query;
         if (!ownerId) {
             return res.status(400).send({ message: 'Missing fields' })
         }
-        const wallets = await getWallets(ownerId)
+        const wallets = await getWallets(ownerId.toString())
         return res.status(200).send({ wallets })
     } catch (err) {
         return handleError(res, err)
@@ -57,8 +57,10 @@ export async function update(req: Request, res: Response) {
 
 export async function remove(req: Request, res: Response) {
     try {
-        const { id } = req.body	;
-        await admin.firestore().collection("wallet").doc(id).delete();
+        const { id } = req.query;
+        if(!id)
+            return res.status(404).send({ message: 'An error has occurred' })
+        await admin.firestore().collection("wallet").doc(id.toString()).delete();
         return res.status(204).send({})
     } catch (err) {
         return handleError(res, err)

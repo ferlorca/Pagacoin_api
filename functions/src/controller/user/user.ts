@@ -19,6 +19,28 @@ export async function all(req: Request, res: Response) {
 	}
 }
 
+
+export async function get(req: Request, res: Response) {
+	try {        
+		let { id  } = req.query;
+		if(!id){
+			id = res.locals.uid;
+		}
+		if(!id)
+			return res.status(404).send({ message: 'Fail Action' });
+
+		const snapshot = await admin.firestore().collection("user").doc(id.toString()).get();
+		if (!snapshot.exists){
+			return res.status(404).send({ message: 'Credentials failed' });
+		}
+		const user:User = User.fromFirebaseDocument(snapshot);
+		return res.status(200).send(user.toJson());
+       
+	} catch (err) {
+		return handleError(res, err)
+	}
+}
+
 export async function update(req: Request, res: Response) {
 	try { 
 		const { id ,email } = req.body	
@@ -43,7 +65,7 @@ export async function add(req: Request, res: Response) {
 		}
 		let user:User =User.fromRequest({...req.body});		
 		if(!await alreadyExist(user))	
-			user = await addUser(user);
+			user = await addNewUser(user);
 		else return res.status(400).send({ message: 'Action not valid' });	
       
 		return res.status(200).send({user})       
@@ -74,15 +96,32 @@ export async function alreadyExist(user:User) {
     }
 }
 
-export async function addUser(user:User) {
-	try {        
-        var userRef = admin.firestore().collection("user");
+
+export async function addNewUser(user:User) {
+	try {       		
+		const userRecord = await admin.auth().createUser({
+				email: user.email,
+				emailVerified: false,
+				password: '123456',
+				disabled: false,
+		})			
+		user.id = userRecord.uid;
+        await admin.firestore().collection("user").doc(user.id).create(user.toJson());
+		return user;
+	} catch (err) {
+		console.error(err);
+        throw err;
+    }
+}
+
+
+export async function addUserInFirestore(user:User) {
+	try {              
 		if(user.id !== "" ){
-			await userRef.doc(user.id).create(user.toJson());
+			await admin.firestore().collection("user").doc(user.id).create(user.toJson());
 			return new User(user.id,user.email,user.name,user.phone)
 		}else{
-			const userSnapshot= await userRef.add(user.toJson());
-			return new User(userSnapshot.id,user.email,user.name,user.phone)
+			throw "Invalid Action"
 		}
 	} catch (err) {
 		console.error(err);

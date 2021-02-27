@@ -5,7 +5,7 @@ import config from "./../../config";
 import {grantRole} from "./authenticated";
 import Role from "./../../models/Enums/Role";
 import { User } from "../../models/User";
-import { addUser } from "../user/user";
+import { addUserInFirestore } from "../user/user";
 
 export async function signup(req: Request, res: Response) {
     try {
@@ -15,11 +15,11 @@ export async function signup(req: Request, res: Response) {
             return res.status(400).send({ message: 'Bad request you need to complete all the parameters.' });
         const { data } = await axios.post(config.URL_SING_UP, req.body);
         await grantRole(req.body.email,Role.ADMIN);
-        const user:User = User.fromSignUp(data.localId,req.body.email);
+
+        const user:User = User.fromSignUp(data.localId,req.body.email);        
+        await addUserInFirestore(user)
         
-        await addUser(user)
-        
-        return res.status(200).send({ expiresIn: data.expiresIn, token: data.idToken, role:[Role.USER] ,email:req.body.email});
+        return res.status(200).send({ expiresIn: data.expiresIn, token: data.idToken, role:[Role.ADMIN] ,email:req.body.email});
     } catch (err) {
         return handleError(res, err);
     }

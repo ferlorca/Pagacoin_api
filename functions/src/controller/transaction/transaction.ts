@@ -7,13 +7,13 @@ import { updateWalletsByTransaction } from "../wallet/wallet";
 
 export async function all(req: Request, res: Response) {
 	try { 
-        const { walledId } = req.body;	
+        const { walledId } = req.query;	
         if (!walledId ) {
             return res.status(400).send({ message: 'Missing fields' })
         }
         let transactions = new MyTransactions();
-        transactions.received = await getIncomingTransaction(walledId);
-        transactions.delivered = await getOutcomingTransaction(walledId);
+        transactions.received = await getIncomingTransaction(walledId.toString());
+        transactions.delivered = await getOutcomingTransaction(walledId.toString());
        
         return res.status(200).send({transactions})       
 	} catch (err) {

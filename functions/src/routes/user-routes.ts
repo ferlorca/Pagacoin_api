@@ -1,10 +1,10 @@
 import { Application } from "express";
-import {all,update,add} from "../controller/user/user";
+import {all,update,add,get} from "../controller/user/user";
 import { isAuthenticated  } from "../controller/auth/authenticated";
 
 
 export default function routesConfig(app: Application) {   
-    app.get('/users',
+    app.get('/user/all',
        [isAuthenticated,
         all]
     );
@@ -18,5 +18,10 @@ export default function routesConfig(app: Application) {
         [isAuthenticated,
         add]
     );
+    app.get('/user',
+        [isAuthenticated,
+        get]
+    );
+    
     
  }

@@ -20,9 +20,9 @@ export class User{
     }
 
     static fromFirebaseDocument(data: FirebaseFirestore.DocumentData): User {
-        const user = data.data();
-        const email=user.email;  
+        const user = data.data();        
         const id = data.id;
+        const email=user.email;  
         const name = user.name;
         const phone = user.phone;
         return new this(id,email,name,phone);
