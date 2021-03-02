@@ -37,7 +37,8 @@ export class User{
     }
 
     public toJson(): any {
-        return {           
+        return {       
+            id:this.id,    
             email: this.email,
             name : this.name,
             phone : this.phone            
